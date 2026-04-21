@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Appointments Management{% endblock %}
+
+{% block extra_css %}
+.appointments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+.appointments-table {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+.app-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.status-upcoming { background: #dbeafe; color: #1e40af; }
+.status-confirmed { background: #dcfce7; color: #166534; }
+.status-completed { background: #fef3c7; color: #d97706; }
+.status-cancelled { background: #fee2e2; color: #dc2626; }
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+.btn-small {
+    padding: 0.25rem 0.75rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-view { background: #3b82f6; color: white; }
+.btn-edit { background: #f59e0b; color: white; }
+.btn-delete { background: #ef4444; color: white; }
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+.modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+}
+.close {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 2rem;
+    cursor: pointer;
+}
+{% endblock %}
+
+{% block content %}
+<div>
+    <div class="appointments-header">
+        <h1>📅 Appointments</h1>
+        <button class="add-patient-btn" onclick="openScheduleModal()" style="background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; font-weight: 600;">+ Schedule New</button>
+    </div>
+
+    <div class="patients-table">
+        <div class="table-header">
+            <div style="font-size: 1.1rem; font-weight: 600; color: #1f2937;">
+                Total Appointments • Showing all
+            </div>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appt in appointments %}
+                <tr>
+                    <td>{{ appt['id'] }}</td>
+                    <td>{{ appt['patient'] }}<br><small>{{ appt['patient'].lower().replace(' ', '.') }}@email.com</small></td>
+                    <td>{{ appt['doctor'] }}</td>
+                    <td>{{ appt['datetime'][:10] }}<br>{{ appt['datetime'][11:] }}</td>
+                    <td><span class="app-status status-{{ appt['status'] }}"> {{ appt['status'].title() }}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-small btn-view">View</button>
+                            <button class="btn-small btn-edit">Reschedule</button>
+                            <button class="btn-small btn-delete">Cancel</button>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 2rem; color: #6b7280;">
+                        No appointments scheduled. Schedule the first one!
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Schedule New Appointment Modal -->
+    <div id="scheduleModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeScheduleModal()">&times;</span>
+            <h2>+ Schedule New Appointment</h2>
+            <form action="/hospital/appointments/new" method="POST">
+                <div style="margin-bottom: 1rem;">
+                    <label>Patient:</label>
+                    <input type="text" name="patient" required style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label>Doctor:</label>
+                    <input type="text" name="doctor" required style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label>Date:</label>
+                    <input type="date" name="date" required style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label>Time:</label>
+                    <input type="time" name="time" required style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
+                </div>
+                <button type="submit" style="background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; width: 100%; font-weight: 600;">Schedule Appointment</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openScheduleModal() {
+    document.getElementById('scheduleModal').style.display = 'block';
+}
+function closeScheduleModal() {
+    document.getElementById('scheduleModal').style.display = 'none';
+}
+</script>
+{% endblock %}

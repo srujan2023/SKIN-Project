@@ -561,10 +561,96 @@ def hospital_dashboard():
     ]
     return render_template('hospital/dashboard.html', stats=stats, activity=activity)
 
-@app.route('/hospital/patients')
+@app.route('/hospital/appointments', methods=['GET', 'POST'])
+@app.route('/hospital/appointments/new', methods=['GET', 'POST'])
+@login_required
+def hospital_appointments():
+    if request.method == 'POST':
+        patient = request.form.get('patient')
+        doctor = request.form.get('doctor')
+        date = request.form.get('date')
+        time = request.form.get('time')
+        if all([patient, doctor, date, time]):
+            # Save appointment (mock)
+            new_appt = {
+                'id': f'APPT-{uuid.uuid4().hex[:8].upper()}',
+                'patient': patient,
+                'doctor': doctor,
+                'datetime': f'{date} {time}:00',
+                'status': 'upcoming'
+            }
+            # Save to JSON
+            appointments_data = []
+            try:
+                with open('data/appointments.json', 'r') as f:
+                    appointments_data = json.load(f)
+            except:
+                appointments_data = []
+            appointments_data.append(new_appt)
+            os.makedirs(DATA_DIR, exist_ok=True)
+            with open('data/appointments.json', 'w') as f:
+                json.dump(appointments_data, f, indent=2)
+            print(f"New appointment scheduled: {new_appt}")
+            return redirect(url_for('hospital_appointments'))
+    
+    # Load appointments
+    appointments = []
+    try:
+        with open('data/appointments.json', 'r') as f:
+            appointments = json.load(f)
+    except:
+        appointments = [
+
+
+
+        {'id': 'APPT-001', 'patient': 'John Doe', 'doctor': 'Dr. Sarah Wilson', 'datetime': '2024-04-25 10:30', 'status': 'upcoming'},
+        {'id': 'APPT-002', 'patient': 'Jane Smith', 'doctor': 'Dr. Michael Chen', 'datetime': '2024-04-22 14:00', 'status': 'confirmed'},
+        {'id': 'APPT-003', 'patient': 'Mike Johnson', 'doctor': 'Dr. Sarah Wilson', 'datetime': '2024-04-20 11:00', 'status': 'completed'},
+        {'id': 'APPT-004', 'patient': 'John Doe', 'doctor': 'Dr. Lisa Patel', 'datetime': '2024-04-18 15:30', 'status': 'cancelled'},
+    ]
+    return render_template('hospital/appointments.html', appointments=appointments)
+
+    appointments = [
+        {'id': 'APPT-001', 'patient': 'John Doe', 'doctor': 'Dr. Sarah Wilson', 'datetime': '2024-04-25 10:30', 'status': 'upcoming'},
+        {'id': 'APPT-002', 'patient': 'Jane Smith', 'doctor': 'Dr. Michael Chen', 'datetime': '2024-04-22 14:00', 'status': 'confirmed'},
+        {'id': 'APPT-003', 'patient': 'Mike Johnson', 'doctor': 'Dr. Sarah Wilson', 'datetime': '2024-04-20 11:00', 'status': 'completed'},
+        {'id': 'APPT-004', 'patient': 'John Doe', 'doctor': 'Dr. Lisa Patel', 'datetime': '2024-04-18 15:30', 'status': 'cancelled'},
+    ]
+    return render_template('hospital/appointments.html', appointments=appointments)
+
+@app.route('/hospital/patients', methods=['GET', 'POST'])
+
 @login_required
 def hospital_patients():
+    # Load records and sample patients
     records = _load_records()
+    if request.method == 'POST':
+        patient_name = request.form.get('patient_name')
+        if patient_name:
+            # Add to sample patients or records
+            sample_patient = {
+                'patient_name': patient_name,
+                'patient_age': request.form.get('patient_age', '30'),
+                'email': f"{patient_name.lower().replace(' ', '.')}@email.com",
+                'created_at': datetime.now(timezone.utc).isoformat()
+            }
+            try:
+                with open('data/sample_patients.json', 'r') as f:
+                    patients_list = json.load(f)
+                patients_list.append(sample_patient)
+                with open('data/sample_patients.json', 'w') as f:
+                    json.dump(patients_list, f, indent=2)
+            except:
+                pass
+            return redirect(url_for('hospital_patients'))
+
+    try:
+        with open('data/sample_patients.json', 'r') as f:
+            sample_patients = json.load(f)
+        patients = sample_patients + records
+    except:
+        patients = records
+
     if not records:
         patients = []
     else:

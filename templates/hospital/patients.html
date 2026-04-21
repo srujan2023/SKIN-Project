@@ -212,11 +212,12 @@
         <div class="modal-content">
             <span class="close" onclick="closeAddModal()">&times;</span>
             <h2>+ Add New Patient</h2>
-            <form id="addPatientForm">
+            <form action="/hospital/patients/add" method="POST">
                 <div style="margin-bottom: 1rem;">
                     <label>Name:</label>
                     <input type="text" name="patient_name" required style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
                 </div>
+
                 <div style="margin-bottom: 1rem;">
                     <label>Age:</label>
                     <input type="number" name="patient_age" min="1" max="120" required style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
@@ -241,10 +242,10 @@ function closeAddModal() {
     document.getElementById('addModal').style.display = 'none';
 }
 document.getElementById('addPatientForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    alert('Patient added successfully! (Demo - refresh to see updates)');
+    // Form now uses POST, no JS needed
     closeAddModal();
 });
+
 function searchPatients() {
     let input = document.getElementById('searchInput').value.toLowerCase();
     let table = document.getElementById('patientsTable');
