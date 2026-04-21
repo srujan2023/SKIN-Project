@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 420px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-top: 0;
+        }
+        label {
+            color: #555;
+        }
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-top: 6px;
+            box-sizing: border-box;
+        }
+        .field {
+            margin: 12px 0;
+        }
+        .error {
+            background: #ffecec;
+            border: 1px solid #f5b5b5;
+            color: #a94442;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+        button {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        a {
+            color: #2d6cdf;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .meta {
+            margin-top: 12px;
+            color: #555;
+            text-align: center;
+        }
+        #password-strength {
+            height: 6px;
+            background: #ddd;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        #password-strength div {
+            height: 100%;
+            transition: width 0.3s;
+        }
+        .weak { background: #ff4444; }
+        .fair { background: #ffaa00; }
+        .strong { background: #44ff44; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Register</h1>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        {% if success %}
+            <div class="success">{{ success }}</div>
+        {% endif %}
+        <form method="post" action="{{ url_for('register') }}" id="registerForm">
+            <div class="field">
+                <label>Username</label><br>
+                <input type="text" name="username" value="{{ username or '' }}" required>
+            </div>
+            <div class="field">
+                <label>Email</label><br>
+                <input type="email" name="email" id="email" required>
+            </div>
+            <div class="field">
+                <label>Password</label><br>
+                <input type="password" name="password" id="password" required>
+                <div id="password-strength"><div></div></div>
+            </div>
+            <div class="field">
+                <label>Confirm Password</label><br>
+                <input type="password" name="confirm_password" id="confirm_password" required>
+            </div>
+            <button type="submit" id="submitBtn">Create Account</button>
+        </form>
+        <div class="meta">
+            <a href="{{ url_for('login') }}">Already have an account?</a>
+            &nbsp;|&nbsp;
+            <a href="{{ url_for('reset_password') }}">Forgot Password?</a>
+            &nbsp;|&nbsp;
+            <a href="{{ url_for('index') }}">Back</a>
+        </div>
+    </div>
+    {% raw %}
+    <script>
+        const password = document.getElementById('password');
+        const confirm = document.getElementById('confirm_password');
+        const strengthDiv = document.getElementById('password-strength').firstChild;
+        const submitBtn = document.getElementById('submitBtn');
+        const form = document.getElementById('registerForm');
+
+        function updateStrength() {
+            const val = password.value;
+            let score = 0;
+            if (val.length >= 8) score += 25;
+            if (/[a-z]/.test(val)) score += 25;
+            if (/[A-Z]/.test(val)) score += 25;
+            if (/\\d/.test(val)) score += 25;
+            if (/[!@#$%^&*(),.?\":{{}}|<>]/.test(val)) score += 25;
+            const strength = score / 100;
+            strengthDiv.style.width = (strength * 100) + '%';
+            strengthDiv.className = strength < 0.6 ? 'weak' : strength < 0.8 ? 'fair' : 'strong';
+            submitBtn.disabled = strength < 1 || confirm.value !== password.value || !email.checkValidity();
+        }
+
+        password.oninput = updateStrength;
+        confirm.oninput = updateStrength;
+        updateStrength();
+    </script>
+    {% endraw %}
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atopic Dermatitis Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        h2 {
+            color: #333;
+        }
+        h3 {
+            color: #555;
+        }
+        ul {
+            text-align: left;
+            margin: 10px 0;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+        img {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 10px;">
+            <div style="font-weight: bold;">Atopic Dermatitis Prediction</div>
+            <div>
+                {% if current_user %}
+                    <span style="color:#555;">Hello, {{ current_user.username }}</span>
+                    &nbsp;|&nbsp;
+                    <a href="{{ url_for('change_password') }}">Change Password</a>
+                    &nbsp;|&nbsp;
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Login</a>
+                    &nbsp;|&nbsp;
+                    <a href="{{ url_for('register') }}">Register</a>
+                {% endif %}
+            </div>
+        </div>
+        <h1>Upload an Image for Prediction</h1>
+        {% if not current_user %}
+            <p style="color:#555; margin-top: 0;">Please login to upload and save your report.</p>
+        {% endif %}
+        <form action="/predict" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".png,.jpg,.jpeg,.webp" required>
+            <div style="margin: 12px 0; text-align: left;">
+                <label>Patient Name</label><br>
+                <input type="text" name="patient_name" style="width: 100%; padding: 8px; margin-top: 6px;">
+            </div>
+            <div style="margin: 12px 0; text-align: left;">
+                <label>Patient Age</label><br>
+                <input type="text" name="patient_age" style="width: 100%; padding: 8px; margin-top: 6px;">
+            </div>
+            <div style="margin: 12px 0; text-align: left;">
+                <label>Symptoms</label><br>
+                <input type="text" name="symptoms" style="width: 100%; padding: 8px; margin-top: 6px;">
+            </div>
+            <div style="margin: 12px 0; text-align: left;">
+                <label>Notes</label><br>
+                <textarea name="notes" rows="3" style="width: 100%; padding: 8px; margin-top: 6px;"></textarea>
+            </div>
+            <input type="submit" value="Predict & Save">
+        </form>
+    </div>
+</body>
+</html>

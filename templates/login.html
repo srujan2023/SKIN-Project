@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 420px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-top: 0;
+        }
+        label {
+            color: #555;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-top: 6px;
+        }
+        .field {
+            margin: 12px 0;
+        }
+        .error {
+            background: #ffecec;
+            border: 1px solid #f5b5b5;
+            color: #a94442;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+        button {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        a {
+            color: #2d6cdf;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .meta {
+            margin-top: 12px;
+            color: #555;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Login</h1>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        <form method="post" action="{{ url_for('login', next=next) }}">
+            <div class="field">
+                <label>Username</label><br>
+                <input type="text" name="username" value="{{ username or '' }}" required>
+            </div>
+            <div class="field">
+                <label>Password</label><br>
+                <input type="password" name="password" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <div class="meta">
+            <a href="{{ url_for('register') }}">Create an account</a>
+            &nbsp;|&nbsp;
+            <a href="{{ url_for('reset_password') }}">Forgot Password?</a>
+            &nbsp;|&nbsp;
+            <a href="{{ url_for('change_password') }}">Change Password</a>
+            &nbsp;|&nbsp;
+            <a href="{{ url_for('index') }}">Back</a>
+        </div>
+    </div>
+</body>
+</html>
+
