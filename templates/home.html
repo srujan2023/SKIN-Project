@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}Atopic Hospital - Home{% endblock %}
+
+{% block extra_css %}
+.hero {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border-radius: 20px;
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+}
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+}
+.hero h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+.hero-subtitle {
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+}
+.cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.cta-primary {
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 1rem 2.5rem;
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s;
+}
+.cta-primary:hover {
+    background: rgba(255,255,255,0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 4rem 0;
+}
+.stat-card {
+    background: white;
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    border: 1px solid #f1f5f9;
+    transition: transform 0.3s;
+}
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+.stat-number {
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #059669, #047857);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 4rem 0;
+}
+.feature-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    text-align: center;
+    border-top: 4px solid #059669;
+    transition: all 0.3s;
+}
+.feature-card:hover {
+    box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+    transform: translateY(-8px);
+}
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 1rem;
+}
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <h1>🏥 Welcome to Atopic Hospital</h1>
+    <p class="hero-subtitle">Advanced AI-Powered Dermatology &amp; Complete Hospital Management</p>
+    <div class="cta-buttons">
+        <a href="{{ url_for('predict_page') }}" class="cta-primary">🚀 AI Skin Prediction</a>
+        <a href="/hospital/dashboard" class="cta-primary">📊 Hospital Dashboard</a>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-number">99.8%</div>
+        <h3>AI Accuracy</h3>
+        <p>Our dermatology AI achieves exceptional precision in skin condition diagnosis</p>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">24/7</div>
+        <h3>Management</h3>
+        <p>Complete hospital operations monitoring, anytime anywhere</p>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">10K+</div>
+        <h3>Patients</h3>
+        <p>Serving thousands with cutting-edge medical technology</p>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section>
+    <h2 class="section-title">Our Hospital Management System</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">👥</div>
+            <h3>Patient Management</h3>
+            <p>Complete patient records, history, treatment plans, and AI predictions all in one place</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📅</div>
+            <h3>Appointment Scheduling</h3>
+            <p>Smart scheduling with doctor availability, patient reminders, and real-time updates</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">👨‍⚕️</div>
+            <h3>Doctor Directory</h3>
+            <p>Specialist profiles, availability, patient reviews, and appointment booking</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📈</div>
+            <h3>Analytics & Reports</h3>
+            <p>Comprehensive dashboards, performance metrics, and business intelligence</p>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Actions -->
+<section style="text-align: center; padding: 3rem 0; background: #f8fafc;">
+    <h2 class="section-title">Quick Actions</h2>
+    <div style="display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+        <a href="/hospital/patients" style="padding: 1rem 2rem; background: #4f46e5; color: white; text-decoration: none; border-radius: 12px; font-weight: 600;">👥 View Patients</a>
+        <a href="{{ url_for('predict_page') }}" style="padding: 1rem 2rem; background: #10b981; color: white; text-decoration: none; border-radius: 12px; font-weight: 600;">🩻 AI Predict</a>
+        <a href="/hospital/appointments" style="padding: 1rem 2rem; background: #f59e0b; color: white; text-decoration: none; border-radius: 12px; font-weight: 600;">📅 Appointments</a>
+    </div>
+</section>
+{% endblock %}

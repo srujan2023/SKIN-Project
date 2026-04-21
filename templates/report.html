@@ -1,130 +1,151 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prediction Report</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            flex-direction: column;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            width: 100%;
-        }
-        h1, h2 {
-            color: #333;
-        }
-        .meta {
-            color: #555;
-            margin-bottom: 12px;
-        }
-        .row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-        .card {
-            border: 1px solid #eee;
-            border-radius: 8px;
-            padding: 12px;
-            background: #fafafa;
-        }
-        ul {
-            margin: 8px 0;
-            padding-left: 18px;
-        }
-        img {
-            width: 100%;
-            max-width: 420px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            display: block;
-        }
-        a {
-            color: #2d6cdf;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        .actions {
-            margin-top: 14px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 10px;">
-            <div style="font-weight: bold;">Atopic Dermatitis Prediction</div>
-            <div>
-                {% if current_user %}
-                    <span style="color:#555;">Hello, {{ current_user.username }}</span>
-                    &nbsp;|&nbsp;
-                    <a href="{{ url_for('logout') }}">Logout</a>
-                {% endif %}
-            </div>
-        </div>
-        <h1>Prediction Report</h1>
-        <div class="meta">
+{% extends "base.html" %}
+
+{% block title %}Prediction Report{% endblock %}
+
+{% block extra_css %}
+.report-container {
+    display: grid;
+    gap: 1.5rem;
+}
+.report-meta {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+.meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+.card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.card-image img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+.meta-details {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+.meta-details div {
+    margin-bottom: 0.25rem;
+}
+.prediction-result {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #059669;
+    margin: 1rem 0;
+}
+.score-badge {
+    background: #10b981;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    display: inline-block;
+}
+.description-list {
+    list-style: none;
+    padding: 0;
+}
+.description-list li {
+    background: #f1f5f9;
+    margin: 0.5rem 0;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #4f46e5;
+}
+.actions {
+    text-align: center;
+    padding: 2rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    margin-top: 1rem;
+}
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: #4f46e5;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background 0.3s;
+}
+.btn:hover {
+    background: #4338ca;
+}
+{% endblock %}
+
+{% block content %}
+<div class="report-container">
+    <h1 style="color: #1f2937;">Prediction Report</h1>
+    
+    <div class="report-meta">
+        <div class="meta-grid">
             <div><strong>Record ID:</strong> {{ record.id }}</div>
             <div><strong>Created:</strong> {{ record.created_at }}</div>
         </div>
+    </div>
 
-       
-            <div class="card">
-                <h2>Uploaded Image</h2>
-                <img src="{{ record.image_url }}" alt="Uploaded image">
-                <div class="meta"><strong>Original file:</strong> {{ record.original_filename }}</div>
-                {% if record.image_meta %}
-                    <div class="meta">
-                        <div><strong>Format:</strong> {{ record.image_meta.format or "-" }}</div>
-                        <div><strong>Size:</strong>
-                            {% if record.image_meta.width and record.image_meta.height %}
-                                {{ record.image_meta.width }}×{{ record.image_meta.height }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                        <div><strong>Mode:</strong> {{ record.image_meta.mode or "-" }}</div>
-                        <div><strong>File bytes:</strong> {{ record.image_meta.size_bytes if record.image_meta.size_bytes is not none else "-" }}</div>
-                    </div>
-                {% endif %}
-            </div>
+    <div class="card card-image">
+        <h2>📸 Uploaded Image</h2>
+        <img src="{{ record.image_url }}" alt="Uploaded image">
+        <div class="meta-details">
+            <strong>Original file:</strong> {{ record.original_filename }}
         </div>
+        {% if record.image_meta %}
+            <div class="meta-details">
+                <div><strong>Format:</strong> {{ record.image_meta.format or '-' }}</div>
+                <div><strong>Size:</strong> 
+                    {% if record.image_meta.width and record.image_meta.height %}
+                        {{ record.image_meta.width }} × {{ record.image_meta.height }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </div>
+                <div><strong>Mode:</strong> {{ record.image_meta.mode or '-' }}</div>
+                <div><strong>Size:</strong> {{ record.image_meta.size_bytes|filesizeformat if record.image_meta.size_bytes else '-' }}</div>
+            </div>
+        {% endif %}
+    </div>
 
-        <div class="card" style="margin-top: 16px;">
-            <h2>Prediction</h2>
-            <div><strong>Result:</strong> {{ record.prediction }}</div>
-            <div><strong>Score:</strong> {{ "%.4f"|format(record.score) }}</div>
-            {% if record.related_names %}
-                <div><strong>Also known as:</strong> {{ record.related_names|join(', ') }}</div>
-            {% endif %}
-            {% if record.description %}
-                <div style="margin-top: 8px;"><strong>Description:</strong></div>
-                <ul>
+    <div class="card">
+        <h2>🎯 Prediction Result</h2>
+        <div class="prediction-result">{{ record.prediction }}</div>
+        <span class="score-badge">Confidence: {{ "%.1f"|format(record.score * 100) }}%</span>
+        
+        {% if record.related_names %}
+            <div style="margin-top: 1rem; color: #64748b;">
+                <strong>Also known as:</strong> {{ record.related_names|join(', ') }}
+            </div>
+        {% endif %}
+        
+        {% if record.description %}
+            <div style="margin-top: 1.5rem;">
+                <h3>Description</h3>
+                <ul class="description-list">
                     {% for point in record.description %}
                         <li>{{ point }}</li>
                     {% endfor %}
                 </ul>
-            {% endif %}
-        </div>
-
-        <div class="actions">
-            <a href="{{ url_for('index') }}">Upload another</a>
-        </div>
+            </div>
+        {% endif %}
     </div>
-</body>
-</html>
+
+    <div class="actions">
+        <a href="{{ url_for('index') }}" class="btn">➕ Upload Another Image</a>
+        <a href="/hospital/reports" class="btn" style="background: #6b7280; margin-left: 1rem;">📊 View All Reports</a>
+    </div>
+</div>
+{% endblock %}

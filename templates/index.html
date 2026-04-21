@@ -1,113 +1,68 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atopic Dermatitis Prediction</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            flex-direction: column;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            width: 100%;
-            text-align: center;
-        }
-        h1 {
-            color: #333;
-        }
-        form {
-            margin-bottom: 20px;
-        }
-        input[type="file"] {
-            margin-bottom: 10px;
-        }
-        input[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-        h2 {
-            color: #333;
-        }
-        h3 {
-            color: #555;
-        }
-        ul {
-            text-align: left;
-            margin: 10px 0;
-        }
-        li {
-            margin-bottom: 5px;
-        }
-        img {
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-top: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 10px;">
-            <div style="font-weight: bold;">Atopic Dermatitis Prediction</div>
-            <div>
-                {% if current_user %}
-                    <span style="color:#555;">Hello, {{ current_user.username }}</span>
-                    &nbsp;|&nbsp;
-                    <a href="{{ url_for('change_password') }}">Change Password</a>
-                    &nbsp;|&nbsp;
-                    <a href="{{ url_for('logout') }}">Logout</a>
-                {% else %}
-                    <a href="{{ url_for('login') }}">Login</a>
-                    &nbsp;|&nbsp;
-                    <a href="{{ url_for('register') }}">Register</a>
-                {% endif %}
-            </div>
+{% extends "base.html" %}
+
+{% block title %}Atopic Dermatitis Prediction{% endblock %}
+
+{% block extra_css %}
+.prediction-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    text-align: center;
+    max-width: 500px;
+    margin: 0 auto;
+}
+.file-input-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 1.5rem;
+}
+.file-input {
+    width: 100%;
+    padding: 1rem;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    background: #f9fafb;
+    cursor: pointer;
+    font-size: 1rem;
+}
+.file-input:focus {
+    outline: none;
+    border-color: #4f46e5;
+}
+.submit-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: transform 0.2s;
+}
+.submit-btn:hover {
+    transform: translateY(-2px);
+}
+{% endblock %}
+
+{% block content %}
+<div class="prediction-card">
+    <h1 style="color: #1f2937; margin-bottom: 1rem;">Upload Image for Prediction</h1>
+    
+    {% if not current_user %}
+        <div style="background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+            Please login to upload and save your prediction reports.
         </div>
-        <h1>Upload an Image for Prediction</h1>
-        {% if not current_user %}
-            <p style="color:#555; margin-top: 0;">Please login to upload and save your report.</p>
-        {% endif %}
-        <form action="/predict" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" accept=".png,.jpg,.jpeg,.webp" required>
-            <div style="margin: 12px 0; text-align: left;">
-                <label>Patient Name</label><br>
-                <input type="text" name="patient_name" style="width: 100%; padding: 8px; margin-top: 6px;">
-            </div>
-            <div style="margin: 12px 0; text-align: left;">
-                <label>Patient Age</label><br>
-                <input type="text" name="patient_age" style="width: 100%; padding: 8px; margin-top: 6px;">
-            </div>
-            <div style="margin: 12px 0; text-align: left;">
-                <label>Symptoms</label><br>
-                <input type="text" name="symptoms" style="width: 100%; padding: 8px; margin-top: 6px;">
-            </div>
-            <div style="margin: 12px 0; text-align: left;">
-                <label>Notes</label><br>
-                <textarea name="notes" rows="3" style="width: 100%; padding: 8px; margin-top: 6px;"></textarea>
-            </div>
-            <input type="submit" value="Predict & Save">
-        </form>
-    </div>
-</body>
-</html>
+    {% endif %}
+    
+    <form action="{{ url_for('predict') }}" method="post" enctype="multipart/form-data">
+        <div class="file-input-wrapper">
+            <input type="file" name="file" class="file-input" accept=".png,.jpg,.jpeg,.webp" required>
+        </div>
+        <button type="submit" class="submit-btn">🚀 Predict & Save Report</button>
+    </form>
+</div>
+{% endblock %}

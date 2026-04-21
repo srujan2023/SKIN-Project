@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}Hospital Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+.stat-label {
+    color: #6b7280;
+    font-weight: 500;
+    margin: 0.5rem 0;
+}
+
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+.stat-box {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 2rem;
+    border-radius: 16px;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    transition: transform 0.3s;
+}
+.stat-box:hover {
+    transform: translateY(-4px);
+}
+.stat-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+}
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #059669;
+}
+.stat-trend {
+    color: #10b981;
+    font-weight: 600;
+}
+.charts-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin: 3rem 0;
+}
+.chart-container {
+    height: 300px;
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+.recent-activity {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    margin-top: 2rem;
+}
+.activity-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+.activity-item:last-child {
+    border-bottom: none;
+}
+@media (max-width: 768px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+{% endblock %}
+
+{% block content %}
+<div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1>🏥 Hospital Dashboard</h1>
+        <select style="padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-radius: 8px; background: white;">
+            <option>Last 30 days</option>
+            <option>Last 7 days</option>
+            <option>Today</option>
+        </select>
+    </div>
+
+    <!-- KPI Stats -->
+    <div class="dashboard-stats">
+        {% for stat in stats %}
+        <div class="stat-box">
+            <div class="stat-icon">{{ stat.icon }}</div>
+            <div class="stat-number">{{ stat.number }}</div>
+            <div class="stat-label">{{ stat.label }}</div>
+            <div class="stat-trend">{{ stat.trend }}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Charts & Activity -->
+    <div class="charts-grid">
+        <div class="chart-container">
+            <canvas id="trendChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="predictionChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="recent-activity">
+        <h3>Recent Activity</h3>
+        {% for item in activity %}
+        <div class="activity-item">
+            <span>{{ item.text }}</span>
+            <span>{{ item.ago }}</span>
+        </div>
+        {% else %}
+        <div class="activity-item">
+            <span>No recent activity</span>
+            <span></span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Trend chart (mock data)
+    new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Patients',
+                data: [65, 59, 80, 81, 56, 55, 90],
+                borderColor: '#10b981',
+                tension: 0.4
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    // Prediction pie chart (mock)
+    new Chart(document.getElementById('predictionChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Atopic', 'Bullous'],
+            datasets: [{
+                data: [62, 38],
+                backgroundColor: ['#10b981', '#ef4444']
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+});
+</script>
+{% endblock %}

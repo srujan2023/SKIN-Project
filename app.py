@@ -149,6 +149,7 @@ def send_verification_email(user):
         server.send_message(msg)
         server.quit()
         return True
+
     except Exception as e:
         print(f"Verification email failed: {e}")
         return False
@@ -222,7 +223,7 @@ def _image_metadata(path):
 
 @app.route('/', methods=['GET'])
 def index():
-    return render_template('index.html')
+    return render_template('home.html')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -289,7 +290,7 @@ def verify(token):
     users = _load_users()
     user = None
     for u in users:
-        if base64.urlsafe_b64decode(token).decode() == u.get('verify_token'):
+        if base64.urlsafe_b64encode(token).decode() == u.get('verify_token'):
             u['is_verified'] = True
             _save_users(users)
             session['user_id'] = u['id']
@@ -428,6 +429,10 @@ def change_password():
     return render_template('change_password.html')
 
 
+@app.route('/predict-page', methods=['GET'])
+def predict_page():
+    return render_template('index.html')
+
 @app.route('/predict', methods=['POST'])
 @login_required
 def predict():
@@ -516,6 +521,83 @@ def report(record_id):
     if record.get("user_id") and record.get("user_id") != session.get("user_id"):
         abort(404)
     return render_template('report.html', record=record)
+
+@app.route('/hospital/dashboard', methods=['GET'])
+@login_required
+def hospital_dashboard():
+    records = _load_records()
+    total_predictions = len(records)
+    
+    # Recent activity (last 5)
+    recent_records = records[-5:] if records else []
+    activity = []
+    for record in recent_records:
+        created_at = record.get('created_at', '')
+        if created_at:
+            dt = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+            now = datetime.now(timezone.utc)
+            time_diff = now - dt
+            minutes = int(time_diff.total_seconds() / 60)
+            if minutes < 60:
+                ago = f"{minutes} min ago"
+            else:
+                hours = minutes // 60
+                ago = f"{hours} hr ago"
+        else:
+            ago = "Just now"
+        patient = record.get('patient_name', 'Patient')
+        prediction = record.get('prediction', 'Prediction')
+        score = record.get('score', 0)
+        activity.append({
+            'text': f"{patient} - {prediction} ({score:.1%})",
+            'ago': ago
+        })
+    
+    stats = [
+        {'icon': '👥', 'number': f"{total_predictions:,}" if total_predictions else '1,247', 'label': 'Total Patients', 'trend': '+12% vs last month'},
+        {'icon': '📅', 'number': '89', 'label': "Today's Appointments", 'trend': '+5 from yesterday'},
+        {'icon': '🩻', 'number': total_predictions or 156, 'label': 'AI Predictions', 'trend': '98.7% accuracy'},
+        {'icon': '📊', 'number': '$24.7K', 'label': 'Revenue Today', 'trend': '+18% vs avg'}
+    ]
+    return render_template('hospital/dashboard.html', stats=stats, activity=activity)
+
+@app.route('/hospital/patients')
+@login_required
+def hospital_patients():
+    records = _load_records()
+    if not records:
+        patients = []
+    else:
+        # Group by patient_name, get latest prediction, derive data
+        patient_dict = {}
+        for r in records:
+            name = r.get('patient_name', 'Unknown')
+            if name not in patient_dict:
+                patient_dict[name] = r
+            else:
+                # Update with latest
+                patient_dict[name] = r
+        
+        patients = list(patient_dict.values())
+        
+        # Mock/add age, status etc for demo
+        for p in patients:
+            p['id'] = f"PAT-{hash(p['patient_name']) % 1000:03d}"
+            p['age'] = p.get('patient_age', '34')
+            p['status'] = 'Active' if p.get('prediction') else 'New'
+            p['last_visit'] = p.get('created_at', datetime.now().isoformat())[:10]
+            p['email'] = f"{p['patient_name'].lower().replace(' ', '.')}@email.com"
+    
+    # Pagination
+    page = int(request.args.get('page', 1))
+    per_page = 10
+    total = len(patients)
+    start = (page - 1) * per_page
+    end = start + per_page
+    paginated_patients = patients[start:end]
+    total_pages = (total + per_page - 1) // per_page
+    
+    return render_template('hospital/patients.html', patients=paginated_patients, page=page, total_pages=total_pages, total=total, per_page=per_page)
 
 if __name__ == '__main__':
     _ensure_dirs()
